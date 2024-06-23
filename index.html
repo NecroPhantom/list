@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20,0000+ onion sites list - PulseCipher</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+        }
+
+        .code-container {
+            background-color: #333;
+            color: #0f0;
+            padding: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            height: calc(100% - 20px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #333;
+        }
+        .code-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .code-container::-webkit-scrollbar-track {
+            background: #333;
+        }
+        .code-container::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
+        }
+        .code-line {
+            display: flex;
+            margin: 5px 0;
+            align-items: baseline;
+        }
+        .line-number {
+            width: 50px;
+            text-align: left;
+            margin-right: 10px;
+            color: #aaa;
+        }
+        .line-text {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="code-container" id="codeContainer">
+    </div>
+
+    <script>
+        const BATCH_SIZE = 100;
+        let lines = [];
+        let currentIndex = 0;
+
+        function loadMoreLines() {
+            const codeContainer = document.getElementById('codeContainer');
+            const fragment = document.createDocumentFragment();
+
+            for (let i = 0; i < BATCH_SIZE && currentIndex < lines.length; i++, currentIndex++) {
+                const lineElement = document.createElement('div');
+                lineElement.className = 'code-line';
+
+                const lineNumber = document.createElement('span');
+                lineNumber.className = 'line-number';
+                lineNumber.textContent = (currentIndex + 1).toString().padStart(5, ' ');
+
+                const lineText = document.createElement('span');
+                lineText.className = 'line-text';
+                lineText.textContent = lines[currentIndex];
+
+                lineElement.appendChild(lineNumber);
+                lineElement.appendChild(lineText);
+                fragment.appendChild(lineElement);
+            }
+
+            codeContainer.appendChild(fragment);
+        }
+
+        function onScroll() {
+            const codeContainer = document.getElementById('codeContainer');
+
+            if (codeContainer.scrollTop + codeContainer.clientHeight >= codeContainer.scrollHeight) {
+                loadMoreLines();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('content.txt')
+                .then(response => response.text())
+                .then(data => {
+                    lines = data.split('\n');
+                    loadMoreLines();
+
+                    const codeContainer = document.getElementById('codeContainer');
+                    codeContainer.addEventListener('scroll', onScroll);
+                })
+                .catch(error => {
+                    console.error('Error loading the file:', error);
+                });
+        });
+    </script>
+</body>
+</html>
